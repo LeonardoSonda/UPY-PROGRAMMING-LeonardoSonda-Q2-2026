@@ -4,9 +4,6 @@
 # Universidad Politecnica de Yucatan - Q2 2026
 # ============================================================
 
-# AI use declaration: Claude (Anthropic) was used to assist
-# in writing and structuring this program.
-
 # -------------------------------------------------------
 # INPUT
 # -------------------------------------------------------
