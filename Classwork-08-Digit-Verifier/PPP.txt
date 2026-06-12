@@ -1,0 +1,61 @@
+// ============================================================
+// PPP - Pseudocode: Digito Verificador UTFSM
+// Author: Leonardo Ulises Sonda Tec
+// Universidad Politecnica de Yucatan - Q2 2026
+// ============================================================
+
+Process DigitoCertificador
+
+    // ---- CONSTANTS ----
+    sequence <- [2, 3, 4, 5, 6, 7]
+    seq_length <- 6
+
+    // ---- INPUT ----
+    # Ask the user for the rol number (no hyphen, no check digit)
+    Write "Ingresa el rol UTFSM (sin guion ni digito verificador): "
+    Read rol
+
+    // ---- PROCESS ----
+
+    # Step 1: Reverse the rol string
+    n <- Length(rol)
+    rol_invertido <- ""
+    For i <- n - 1 To 0 Step -1 Do
+        rol_invertido <- rol_invertido + rol[i]
+    End For
+
+    # Step 2: Multiply each digit by cycling sequence 2,3,4,5,6,7 and accumulate
+    total <- 0
+    For i <- 0 To n - 1 Do
+        digit <- ConvertToInt(rol_invertido[i])
+        multiplier <- sequence[i Mod seq_length]
+        total <- total + (digit * multiplier)
+    End For
+
+    # Step 3: Apply modulo 11
+    resto <- total Mod 11
+
+    # Step 4: Subtract from 11 to get the check digit value
+    diferencia <- 11 - resto
+
+    # Step 5: Handle special cases
+    If diferencia = 11 Then
+        digito_verificador <- "0"
+    Else
+        If diferencia = 10 Then
+            digito_verificador <- "K"
+        Else
+            digito_verificador <- ConvertToString(diferencia)
+        End If
+    End If
+
+    // ---- OUTPUT ----
+    Write "Rol ingresado      : " + rol
+    Write "Rol invertido      : " + rol_invertido
+    Write "Suma total         : " + ConvertToString(total)
+    Write "Modulo 11          : " + ConvertToString(resto)
+    Write "11 - resto         : " + ConvertToString(diferencia)
+    Write "Digito verificador : " + digito_verificador
+    Write "Rol completo       : " + rol + "-" + digito_verificador
+
+End Process
