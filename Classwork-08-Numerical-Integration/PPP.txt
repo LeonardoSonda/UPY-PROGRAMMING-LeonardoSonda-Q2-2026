@@ -1,0 +1,72 @@
+Process NumericalIntegration
+
+    # AI use declaration: Claude (Anthropic) was used to assist
+    # in writing and structuring this pseudocode.
+
+    # INPUT
+    Write "Write the left endpoint of the interval: "
+    Read a
+
+    Write "Write the right endpoint of the interval: "
+    Read b
+
+    Write "Write the function to integrate: "
+    Read f_x
+
+    Write "Write the integration method (LRM/RRM/MRM/TRAP): "
+    Read method
+
+    # PROCESS
+
+    # Convert endpoints: replace "pi" with its numeric value if present
+    If "pi" is in a Then
+        a <- evaluate(a with "pi" replaced by 3.14159...)
+    Else
+        a <- convert a to float
+    End If
+
+    If "pi" is in b Then
+        b <- evaluate(b with "pi" replaced by 3.14159...)
+    Else
+        b <- convert b to float
+    End If
+
+    n        <- 1000
+    h        <- (b - a) / n
+    area     <- 0.0
+    constant <- 0
+    shift    <- 0
+
+    If method = "RRM" Then
+        shift <- 1
+    End If
+
+    If method = "MRM" Then
+        constant <- h / 2
+    End If
+
+    If method = "TRAP" Then
+        f_0  <- f_x with x replaced by a
+        area <- area + (h / 2) * evaluate(f_0)
+
+        For i <- 1 To n - 1 Do
+            xi   <- a + i * h
+            f_xi <- f_x with x replaced by xi
+            area <- area + (h / 2) * 2 * evaluate(f_xi)
+        End For
+
+        f_xn <- f_x with x replaced by b
+        area <- area + (h / 2) * evaluate(f_xn)
+
+    Else
+        For i <- shift To n - 1 + shift Do
+            xi     <- a + i * h
+            height <- f_x with x replaced by (xi + constant)
+            area   <- area + h * evaluate(height)
+        End For
+    End If
+
+    # OUTPUT
+    Write "The integration of " + f_x + " is " + area
+
+End Process
