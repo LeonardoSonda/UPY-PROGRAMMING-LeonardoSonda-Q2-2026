@@ -1,36 +1,35 @@
 Process SpanishVerbConjugator
 
-
     # INPUT
-    Write "Ingrese verbo: "
-    Read verbo
+    Write "Enter verb: "
+    Read verb
 
     # PROCESS
 
     # Define list of pronouns
-    pronombres <- ['yo', 'tu', 'el', 'nosotros', 'vosotros', 'ellos']
+    pronouns <- ['yo', 'tu', 'el', 'nosotros', 'vosotros', 'ellos']
 
     # Define dictionary of endings for each verb type
-    terminaciones <- {
+    endings <- {
         'ar': ['o', 'as', 'a', 'amos', 'ais', 'an'],
         'er': ['o', 'es', 'e', 'emos', 'eis', 'en'],
         'ir': ['o', 'es', 'e', 'imos', 'is', 'en']
     }
 
     # Get stem: all letters except the last 2
-    stem <- verbo[0 .. length(verbo) - 3]
+    stem <- verb[0 .. length(verb) - 3]
 
     # Get ending: last 2 letters
-    ending <- verbo[length(verbo) - 2 .. length(verbo) - 1]
+    ending <- verb[length(verb) - 2 .. length(verb) - 1]
 
     # Look up the endings list for this verb type
-    endings_list <- terminaciones[ending]
+    endings_list <- endings[ending]
 
     # OUTPUT
 
     # Loop through all 6 pronouns using index
     For i <- 0 To 5 Do
-        Write pronombres[i] + " " + stem + endings_list[i]
+        Write pronouns[i] + " " + stem + endings_list[i]
     End For
 
 End Process

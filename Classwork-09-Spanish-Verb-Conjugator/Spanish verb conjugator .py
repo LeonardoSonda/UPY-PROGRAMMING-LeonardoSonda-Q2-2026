@@ -5,29 +5,30 @@
 # ============================================================
 
 # # INPUT
-verbo = input("Ingrese verbo: ")
+verb = input("Enter verb: ")
 
 # # PROCESS
 
 # List of pronouns (required structure)
-pronombres = ['yo', 'tu', 'el', 'nosotros', 'vosotros', 'ellos']
+pronouns = ['yo', 'tu', 'el', 'nosotros', 'vosotros', 'ellos']
 
 # Dictionary of endings by verb type (required structure)
-terminaciones = {
+endings = {
     'ar': ['o', 'as', 'a', 'amos', 'ais', 'an'],
     'er': ['o', 'es', 'e', 'emos', 'eis', 'en'],
     'ir': ['o', 'es', 'e', 'imos', 'is', 'en']
 }
 
 # Get stem (verb minus last 2 letters) and ending (last 2 letters)
-stem    = verbo[:-2]
-ending  = verbo[-2:]
+stem   = verb[:-2]
+ending = verb[-2:]
 
 # Look up the matching endings list in the dictionary
-endings_list = terminaciones[ending]
+endings_list = endings[ending]
 
 # # OUTPUT
 
-# Loop over pronouns and print conjugation using same index
-for i in range(len(pronombres)):
-    print(pronombres[i], stem + endings_list[i])
+# Loop over pronouns and print conjugation using enumerate
+for index, pronombre in enumerate(pronouns):
+    terminacion = endings_list[index]
+    print(f"{pronombre} {stem}{terminacion}")
