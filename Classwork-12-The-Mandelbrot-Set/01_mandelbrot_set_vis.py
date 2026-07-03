@@ -12,9 +12,9 @@ width = 800
 height = 600
 max_iter = 100
 
-# Open and read the raw Mandelbrot data generated in Classwork 11
+# Open and read the raw Mandelbrot data generated in Classwork 12
 try:
-    archivo = open('mandelbrot.csv', 'r')
+    archivo = open('mandelbrot12.csv', 'r')
     lineas = archivo.readlines()
     archivo.close()
 except FileNotFoundError:
