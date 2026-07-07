@@ -1,0 +1,141 @@
+# ==============================================================================
+# PSEUDOCODE: School Management System
+# ==============================================================================
+
+START
+    # Define hardcoded structures
+    users ← Dictionary of application users with names, roles, and passwords
+    subjects ← Tuple containing 7 structural course titles
+    notes ← Nested dictionary containing students' grades mapped to subjects
+
+    # Login Phase Matrix
+    authenticated ← False
+    WHILE authenticated IS False DO
+        PRINT "User: "
+        READ input_username
+        PRINT "Password: "
+        READ input_password
+
+        IF input_username exists within keys of users THEN
+            IF users[input_username]['password'] EQUALS input_password THEN
+                current_user ← input_username
+                current_role ← users[input_username]['rol']
+                current_name ← users[input_username]['name']
+                authenticated ← True
+            ELSE
+                PRINT "Invalid credentials. Try again."
+            ENDIF
+        ELSE
+            PRINT "Invalid credentials. Try again."
+        ENDIF
+    ENDWHILE
+
+    PRINT "Welcome!, " + current_name + " (" + current_role + ")"
+
+    # Branch Strategy based on roles
+    IF current_role EQUALS "student" THEN
+        PRINT "========================="
+        PRINT "School Report"
+        PRINT "========================="
+        approved_set ← Empty Set
+        
+        FOR EACH subject IN subjects DO
+            student_grade ← notes[current_user][subject]
+            PRINT subject + ": " + student_grade
+            IF student_grade >= 8.0 THEN
+                ADD subject TO approved_set
+            ENDIF
+        ENDFOR
+        
+        pending_set ← Difference between (Set of subjects) and approved_set
+        
+        PRINT "Approved Subjects:"
+        FOR EACH subject IN approved_set DO
+            PRINT subject
+        ENDFOR
+        
+        PRINT "Pending Subjects:"
+        FOR EACH subject IN pending_set DO
+            PRINT subject
+        ENDFOR
+
+    ELSE IF current_role EQUALS "professor" THEN
+        keep_grading ← True
+        WHILE keep_grading IS True DO
+            PRINT "Students"
+            FOR EACH username IN keys of users DO
+                IF users[username]['rol'] EQUALS 'student' THEN
+                    PRINT username, users[username]['name']
+                ENDIF
+            ENDFOR
+            
+            READ target_student
+            WHILE target_student NOT IN users OR users[target_student]['rol'] NOT EQUALS 'student' DO
+                PRINT "Invalid student username. Try again."
+                READ target_student
+            ENDWHILE
+            
+            PRINT "Subjects"
+            FOR EACH subject IN subjects DO
+                PRINT subject
+            ENDFOR
+            
+            READ target_subject
+            WHILE target_subject NOT IN subjects DO
+                PRINT "Invalid subject name. Try again."
+                READ target_subject
+            ENDWHILE
+            
+            valid_grade ← False
+            WHILE valid_grade IS False DO
+                READ input_grade
+                IF input_grade IS numeric AND input_grade >= 0.0 AND input_grade <= 10.0 THEN
+                    new_grade_float ← Conversion of input_grade to float data type
+                    valid_grade ← True
+                ELSE
+                    PRINT "Grade must be between 0 and 10."
+                ENDIF
+            ENDWHILE
+            
+            current_grade ← notes[target_student][target_subject]
+            PRINT target_subject + ": " + current_grade + " ==> " + new_grade_float
+            READ confirmation
+            
+            IF confirmation EQUALS "yes" THEN
+                notes[target_student][target_subject] ← new_grade_float
+                PRINT "Grade updated!"
+                FOR EACH subject IN subjects DO
+                    PRINT subject + ": " + notes[target_student][subject]
+                ENDFOR
+            ELSE
+                PRINT "Update cancelled."
+            ENDIF
+            
+            READ another
+            IF another NOT EQUALS "yes" THEN
+                keep_grading ← False
+            ENDIF
+        ENDWHILE
+
+    ELSE IF current_role EQUALS "coordinator" THEN
+        PRINT "Professors"
+        FOR EACH username IN keys of users DO
+            IF users[username]['rol'] EQUALS 'professor' THEN
+                PRINT username, users[username]['name']
+            ENDIF
+        ENDFOR
+        
+        PRINT "Students"
+        FOR EACH username IN keys of users DO
+            IF users[username]['rol'] EQUALS 'student' THEN
+                PRINT username, users[username]['name']
+            ENDIF
+        ENDFOR
+        
+        PRINT "Records"
+        PRINT Header row showing: Subjects | jperez | dromo | mjuarez | mlopez | euc | cbalam
+        FOR EACH subject IN subjects DO
+            PRINT subject alongside matching values from notes dictionary for every student profile
+        ENDFOR
+    ENDIF
+END
