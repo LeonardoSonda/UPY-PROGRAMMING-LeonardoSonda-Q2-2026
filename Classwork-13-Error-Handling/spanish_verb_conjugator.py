@@ -2,7 +2,6 @@
 # Classwork 13 - Error Handling: Spanish Verb Conjugator
 # Author: Leonardo Sonda
 # Universidad Politecnica de Yucatan - Q2 2026
-# AI use declaration: Claude (Anthropic) was used to assist
 # ============================================================
 
 # ── PROCESS: Required structures ─────────────────────────────
