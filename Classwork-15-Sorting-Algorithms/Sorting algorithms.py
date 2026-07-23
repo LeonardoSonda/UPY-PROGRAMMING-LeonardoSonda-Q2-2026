@@ -2,132 +2,100 @@
 # Classwork 15 - Sorting Algorithms: Bubble Sort Visualized
 # Author: Leonardo Sonda
 # Universidad Politecnica de Yucatan - Q2 2026
-# AI use declaration: Claude (Anthropic) was used to assist
-# in writing and structuring this program.
+# AI use declaration: Claude para poner el sonido de la animación y la visualización de las barras.
 # ============================================================
 
+import random
 import stddraw
-import color
-import time
 import pygame
+import numpy as np
+from color import Color
 
-# Inicialización de Pygame Mixer
+# ── PROCESS: Sound setup ─────────────────────────────────────
 pygame.mixer.init(frequency=44100, size=-16, channels=1, buffer=512)
 
 def beep(freq=440, duration=100):
-    import numpy as np
     sample_rate = 44100
     frames = int(duration * sample_rate / 1000)
-    t = np.linspace(0, duration/1000, frames, False)
+    t = np.linspace(0, duration / 1000, frames, False)
     wave = (np.sin(2 * np.pi * freq * t) * 32767).astype(np.int16)
     wave = np.column_stack([wave, wave])
     sound = pygame.sndarray.make_sound(wave)
     sound.play()
 
-# ── INPUT ────────────────────────────────────────────────────
+# ── PROCESS: Draw bars ────────────────────────────────────────
+def draw_bars(numbers, selected=(), phase='compare'):
+    stddraw.clear()
+    n = len(numbers)
+    bar_width = 10.0 / n
 
-# Array to sort (from the class example)
-array = [5, 3, 8, 4, 2, 7, 1, 6]
-n     = len(array)
+    for i, number in enumerate(numbers):
+        x = i * bar_width + bar_width / 2
 
-# Visualization settings
-WIDTH  = 1.0
-HEIGHT = 1.0
-DELAY  = 0.6   # seconds between frames
-
-# Colors
-COL_BAR      = color.BOOK_BLUE       # default bar color
-COL_COMPARE  = color.ORANGE          # pair being compared
-COL_SWAP     = color.RED             # bars being swapped
-COL_SORTED   = color.DARK_GREEN      # finalized bars
-COL_BG       = color.WHITE           # background
-COL_TEXT     = color.BLACK           # label text
-
-# ── PROCESS: Drawing helper ───────────────────────────────────
-
-def draw_array(arr, compare=(-1,-1), swapped=False, sorted_from=None):
-    """Draw the current state of the array as vertical bars."""
-    stddraw.clear(COL_BG)
-
-    bar_w = WIDTH / n
-
-    for i, val in enumerate(arr):
-        # Choose bar color based on state
-        if sorted_from is not None and i >= sorted_from:
-            c = COL_SORTED
-        elif swapped and i in compare:
-            c = COL_SWAP
-        elif i in compare:
-            c = COL_COMPARE
+        # Color por fase:
+        # compare  → naranja  (par siendo comparado)
+        # swap     → rojo     (par siendo intercambiado)
+        # sorted   → verde    (ya ordenado / estado final)
+        # default  → azul
+        if i in selected:
+            if phase == 'swap':
+                color = Color(220, 50, 50)    # rojo
+            elif phase == 'compare':
+                color = Color(255, 165, 0)    # naranja
+            elif phase == 'sorted':
+                color = Color(50, 180, 50)    # verde
+            else:
+                color = Color(70, 130, 220)   # azul
         else:
-            c = COL_BAR
+            color = Color(70, 130, 220)       # azul default
 
-        # Draw bar: x center, y center, half-width, half-height
-        x      = (i + 0.5) * bar_w
-        height = val / (max(arr) + 1) * HEIGHT * 0.85
-        stddraw.setPenColor(c)
-        stddraw.filledRectangle(x - bar_w * 0.4, 0.05, bar_w * 0.8, height)
+        stddraw.setPenColor(color)
+        stddraw.filledRectangle(x - bar_width / 2, 0, bar_width * 0.9, number)
 
-        # Draw value label above bar
-        stddraw.setPenColor(COL_TEXT)
-        stddraw.setFontSize(14)
-        stddraw.text(x, height + 0.07, str(val))
+    stddraw.show(400)   # 400 ms entre frames → más lento y visible
 
-    stddraw.show(DELAY * 1000)
+# ── PROCESS: Bubble Sort with animation and sound ─────────────
+def bubble_sort_animated(numbers):
+    stddraw.setXscale(-0.1, 10)
+    stddraw.setYscale(-0.5, max(numbers) + 1)
+    n = len(numbers)
 
-# ── PROCESS: Bubble Sort with visualization ───────────────────
+    # Estado inicial en azul
+    draw_bars(numbers)
 
-stddraw.setXscale(0, WIDTH)
-stddraw.setYscale(0, HEIGHT)
-stddraw.setCanvasSize(600, 400)
+    for sweep in range(n):
+        swapped = False
+        for pair in range(0, n - 1 - sweep):
 
-comparisons = 0
-swaps       = 0
+            # Comparación → naranja + sonido agudo
+            beep(freq=600, duration=80)
+            draw_bars(numbers, selected=(pair, pair + 1), phase='compare')
 
-# Draw initial state
-draw_array(array)
+            if numbers[pair] > numbers[pair + 1]:
+                numbers[pair], numbers[pair + 1] = numbers[pair + 1], numbers[pair]
+                swapped = True
 
-for paso in range(n - 1):
-    swapped_any = False
+                # Swap → rojo + sonido grave
+                beep(freq=300, duration=150)
+                draw_bars(numbers, selected=(pair, pair + 1), phase='swap')
 
-    for j in range(n - 1 - paso):
-        comparisons += 1
+        # Fin de pass → último elemento en verde
+        draw_bars(numbers, selected=(n - 1 - sweep,), phase='sorted')
 
-        # Sonido de comparación (600 Hz)
-        beep(freq=600, duration=100)
+        if not swapped:
+            break
 
-        # Highlight the pair being compared
-        draw_array(array, compare=(j, j+1), swapped=False,
-                   sorted_from=n - paso)
+    # Final → todo verde
+    for i in range(n):
+        draw_bars(numbers, selected=tuple(range(i + 1)), phase='sorted')
+        beep(freq=500 + i * 50, duration=60)
 
-        if array[j] > array[j + 1]:
-            # Swap
-            array[j], array[j + 1] = array[j + 1], array[j]
-            swaps      += 1
-            swapped_any = True
+    stddraw.show()
 
-            # Sonido de intercambio / swap (300 Hz)
-            beep(freq=300, duration=150)
+# ── INPUT ─────────────────────────────────────────────────────
+numbers = [random.randint(1, 100) for _ in range(10)]
 
-            # Show the swap in red
-            draw_array(array, compare=(j, j+1), swapped=True,
-                       sorted_from=n - paso)
-
-    # Draw end-of-pass state with one more element finalized
-    draw_array(array, sorted_from=n - paso - 1)
-
-    # Early exit if no swaps this pass
-    if not swapped_any:
-        break
-
-# Final sorted state — all green
-draw_array(array, sorted_from=0)
-
-# ── OUTPUT ───────────────────────────────────────────────────
-
-print(f"Sorted array   : {array}")
-print(f"Total passes   : {paso + 1}")
-print(f"Comparisons    : {comparisons}")
-print(f"Swaps          : {swaps}")
-
-stddraw.show()
+# ── OUTPUT ────────────────────────────────────────────────────
+print(f"Before bubble sort: {numbers}")
+bubble_sort_animated(numbers)
+print(f"After bubble sort:  {numbers}")
